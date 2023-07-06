@@ -21,6 +21,7 @@ from sklearn.metrics import accuracy_score
 from sklearn import svm
 from sklearn.ensemble import RandomForestClassifier
 import seaborn as sns
+import open3d as o3d
 
 
 def random_seed():
@@ -197,3 +198,24 @@ def Collect_pi(dataset, xrange, yrange, number_pixel=20, gauss_sigma=0.01, weigh
         pis[index,:] = pi
     return pis
 
+
+def find_align(source_pc, target_pc, output_icp = False, max_correspondence_distance=.1):
+    source_cloud = o3d.geometry.PointCloud()
+    source_cloud.points = o3d.utility.Vector3dVector(source_pc)
+    target_cloud = o3d.geometry.PointCloud()
+    target_cloud.points = o3d.utility.Vector3dVector(target_pc)
+    # Perform ICP
+    icp_result = o3d.pipelines.registration.registration_icp(
+        source_cloud,
+        target_cloud,
+        max_correspondence_distance=max_correspondence_distance,
+        estimation_method = o3d.pipelines.registration.TransformationEstimationPointToPoint()
+    )
+    # Get the aligned source cloud
+    aligned_source_cloud = source_cloud.transform(icp_result.transformation)
+    pc1_regis = np.asarray(aligned_source_cloud.points)
+    if output_icp:
+        output = (pc1_regis, icp_result)
+    else:
+        output = pc1_regis
+    return output
