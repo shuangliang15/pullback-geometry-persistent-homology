@@ -4,19 +4,19 @@
 
 #### Folder structure
     .
-    ├── Identifying-what-is-recognized          # Codes and data for section 4 "Identifying what is recognized"
-    │   ├── Figure                              # Figures shown in section 4
+    ├── Identifying-what-is-recognized      # Codes and data for section 4 "Identifying what is recognized"
+    │   ├── Figure                          # Figures shown in section 4
     │   │   ├── align.png
     │   │   └── ...
-    │   ├── Experiments.ipynb                   # Scripts to replicate the experiments in section 4
-    │   └── utilyze.py                          # Functions needed in the experiments
-    └── Selecting-hyperparameters               # Codes and data for section 5 "Selecting hyperparameters"
-        ├── Data                                # Brain artery tree data
-        │   ├── label.csv                       # Labels of brain artery trees
-        │   └── data_pc.pkl                     # Vertices of brain artery trees
-        ├── Figure                              # Figures shown in section 5
+    │   ├── Experiments.ipynb               # Scripts to replicate the experiments in section 4
+    │   └── utilyze.py                      # Functions needed in the experiments
+    └── Selecting-hyperparameters           # Codes and data for section 5 "Selecting hyperparameters"
+        ├── Data                            # Brain artery tree data
+        │   ├── label.csv                   # Labels of brain artery trees
+        │   └── data_pc.pkl                 # Vertices of brain artery trees
+        ├── Figure                          # Figures shown in section 5
         │   ├── correlation_cnn.png
         │   └── ...
-        ├── Experiments.ipynb                   # Scripts to replicate the experiments in section 5
-        └── utilyze.py                          # Functions needed in the experiments
+        ├── Experiments.ipynb               # Scripts to replicate the experiments in section 5
+        └── utilyze.py                      # Functions needed in the experiments
  
