@@ -9,7 +9,8 @@
     │   │   ├── align.png
     │   │   └── ...
     │   ├── Experiments.ipynb               # Scripts to replicate the experiments in section 4
-    │   └── utilyze.py                      # Functions needed in the experiments
+    │   ├── utilyze.py                      # Functions needed in the experiments
+    │   └── pbn_perturb_func.py             # Function to compute average pull-back norm for perturbations
     └── Selecting-hyperparameters           # Codes and data for section 5 "Selecting hyperparameters"
         ├── Data                            # Brain artery tree data
         │   ├── label.csv                   # Labels of brain artery trees
@@ -19,4 +20,3 @@
         │   └── ...
         ├── Experiments.ipynb               # Scripts to replicate the experiments in section 5
         └── utilyze.py                      # Functions needed in the experiments
- 
