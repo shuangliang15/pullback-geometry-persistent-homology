@@ -22,6 +22,7 @@ from sklearn import svm
 from sklearn.ensemble import RandomForestClassifier
 import seaborn as sns
 import open3d as o3d
+from scipy.special import factorial
 
 
 def random_seed():
@@ -82,22 +83,35 @@ class ConstantWeight:
         x = tf.stop_gradient(x)
         return tf.ones_like(x[:,1])
 
-class GaussianWeight:
-    def __init__(self, mu, sigma):
-        self.mu = mu
-        self.sigma = sigma
+class BetaWeighting:
+    def __init__(self, m, s):
+        self.m = m # mean
+        self.s = s # concentration
     
     def compute_weight(self, x):
-        x = tf.stop_gradient(x)
+        scale = 1 # support = [0, 1/scale]
+
+        x = tf.stop_gradient(x).numpy()
         pers = x[:,1]
-        weights = tf.exp(-(pers - self.mu) ** 2 /(2 * self.sigma))
+        n = self.m * (1 - self.m) / self.s**2
+        a = self.m * n
+        b = (1-self.m) * n
+        beta = factorial(a-1) * factorial(b-1)/factorial(a+b-1)
+        weights = []
+        for idx in range(len(pers)):
+            if pers[idx] * scale >= 1:
+                weights.append(0)
+            else:    
+                weights.append((scale * pers[idx])**(a-1) * (1- scale * pers[idx])**(b-1) / beta)
+        
+        weights = tf.constant(weights, dtype=float)
         return weights
     
 class Weight:
-    def __init__(self, method='linear', mu=None, sigma=None, b=None):
+    def __init__(self, method='linear', b=None, m=None, s=None):
         self.method = method
-        if method == 'gaussian':
-            self.weight_func = GaussianWeight(mu,sigma)
+        if method == 'beta':
+            self.weight_func = BetaWeighting(m, s)
         elif method == 'linear':
             self.weight_func = LinearWeight(b)
         elif method == 'constant':
@@ -160,7 +174,7 @@ def get_jacobian_rips(pc, xrange, yrange, number_pixel=20, gauss_sigma=0.01, wei
     return output
 
 
-def Collect_jacobian_and_rank_and_pi(dataset, jacobian_method, xrange, yrange, number_pixel=20, gauss_sigma=0.01, weight_func = ConstantWeight(), max_edge_length=2., homology_dimensions=[1],normalize=False, normalize_jac=True):
+def Collect_jacobian_and_rank_and_pi(dataset, jacobian_method, xrange, yrange, number_pixel=20, gauss_sigma=0.01, weight_func = ConstantWeight(), max_edge_length=2., homology_dimensions=[1],normalize=False, normalize_jac=True, lapack_driver='gesdd'):
     '''
     Computes the jacobians for a whole dataset.
     Each of the jacobian is computed with jacobian_method.
@@ -176,7 +190,7 @@ def Collect_jacobian_and_rank_and_pi(dataset, jacobian_method, xrange, yrange, n
     ranks = []
     for index, pc in enumerate(dataset): 
         J, pi = jacobian_method(pc, xrange, yrange, number_pixel, gauss_sigma, weight_func, max_edge_length, homology_dimensions,normalize, output_pi=True)
-        _, Sigma, _ = scipy.linalg.svd(J)
+        _, Sigma, _ = scipy.linalg.svd(J, lapack_driver=lapack_driver)
         # Normalize
         if normalize_jac ==True and np.max(Sigma)>0:
             J /= np.max(Sigma)
