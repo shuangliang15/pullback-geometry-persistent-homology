@@ -1,5 +1,3 @@
-# Pullback-geometry-persistent-homology
-
 #### This repository contains codes and data for the article [Pull-back Geometry of Persistent Homology Encodings](https://arxiv.org/abs/2310.07073).
 
 #### Folder structure
